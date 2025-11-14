@@ -13,6 +13,12 @@ class Checkout {
      * Initialize checkout page
      */
     init() {
+        // Check authentication
+        if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+            this.showAuthRequired();
+            return;
+        }
+        
         this.renderOrderItems();
         this.renderOrderSummary();
         
@@ -20,6 +26,28 @@ class Checkout {
         if (cart.items.length === 0) {
             this.showEmptyCart();
         }
+    }
+
+    /**
+     * Show authentication required message
+     */
+    showAuthRequired() {
+        const checkoutContent = document.getElementById('checkoutContent');
+        
+        if (!checkoutContent) return;
+        
+        checkoutContent.innerHTML = `
+            <div class="empty-checkout">
+                <i class="fas fa-lock"></i>
+                <h3>Authentication Required</h3>
+                <p>Please login or sign up to proceed with checkout.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                    <a href="index.html" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Go to Login
+                    </a>
+                </div>
+            </div>
+        `;
     }
 
     /**
@@ -112,6 +140,17 @@ class Checkout {
             return;
         }
 
+        // Check authentication
+        if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+            cart.showNotification('Please login to confirm order');
+            return;
+        }
+
+        // Save order to history
+        if (typeof auth !== 'undefined' && auth.isLoggedIn()) {
+            this.saveOrderToHistory();
+        }
+
         // Show success message
         const successMessage = document.getElementById('successMessage');
         const checkoutContent = document.getElementById('checkoutContent');
@@ -125,6 +164,28 @@ class Checkout {
                 cart.clearCart();
             }, 1000);
         }
+    }
+
+    /**
+     * Save order to order history
+     */
+    saveOrderToHistory() {
+        if (typeof auth === 'undefined' || !auth.isLoggedIn()) return;
+
+        const order = {
+            id: Date.now().toString(),
+            userId: auth.getCurrentUser().id,
+            items: [...cart.items],
+            subtotal: cart.getSubtotal(),
+            tax: cart.getTax(),
+            discount: cart.getDiscount(),
+            total: cart.getTotal(),
+            date: new Date().toISOString()
+        };
+
+        const orderHistory = Storage.load('orderHistory') || [];
+        orderHistory.unshift(order); // Add to beginning
+        Storage.save('orderHistory', orderHistory);
     }
 }
 

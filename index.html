@@ -23,6 +23,23 @@
                     <li><a href="#about" class="nav-link">About</a></li>
                     <li><a href="#contact" class="nav-link">Contact</a></li>
                 </ul>
+                <div class="nav-auth" id="authButtons" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button class="btn btn-secondary btn-sm" onclick="auth.showLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="btn btn-primary btn-sm" onclick="auth.showSignupModal()">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                </div>
+                <div class="nav-user" id="userInfo" style="display: none; align-items: center; gap: 1rem;">
+                    <a href="order-history.html" class="nav-link" style="text-decoration: none;">
+                        <i class="fas fa-history"></i> Orders
+                    </a>
+                    <span class="user-name"></span>
+                    <button class="btn btn-secondary btn-sm" onclick="auth.logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
                 <div class="cart-counter" id="cartCounter" onclick="cart.toggleCartModal()" style="display: block; visibility: visible; opacity: 1;">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-badge" id="cartBadge"></span>
@@ -87,141 +104,11 @@
                 </div>
             </div>
             
-            <div class="products-grid">
-                <div class="product-card" data-name="apples" data-category="Fruit" data-price="2.99" data-id="1">
-                    <div class="product-image">
-                        <img src="picture9.jpg" alt="Fresh Apples">
-                    </div>
-                    <div class="product-info">
-                        <h3>Apples</h3>
-                        <p>Crisp, juicy apples perfect for snacking, baking, or juicing.</p>
-                        <div class="price-category">
-                            <span class="price">$2.99</span>
-                            <span class="product-category">Fruit</span>
-                        </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(1)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <div class="product-card" data-name="carrots" data-category="Vegetable" data-price="1.99" data-id="2">
-                    <div class="product-image">
-                        <img src="picture3.jpg" alt="Organic Carrots">
-                    </div>
-                    <div class="product-info">
-                        <h3>Carrots</h3>
-                        <p>Sweet, crunchy carrots. Great for salads.</p>
-                        <div class="price-category">
-                            <span class="price">$1.99</span>
-                            <span class="product-category">Vegetable</span>
-                        </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(2)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <div class="product-card" data-name="bananas" data-category="Fruit" data-price="0.99" data-id="3">
-                    <div class="product-image">
-                        <img src="picture4.jpg" alt="Fresh Bananas">
-                    </div>
-                    <div class="product-info">
-                        <h3>Bananas</h3>
-                        <p>Sweet bananas. Perfect for breakfast.</p>
-                        <div class="price-category">
-                            <span class="price">$0.99</span>
-                            <span class="product-category">Fruit</span>
-                        </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(3)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <div class="product-card" data-name="tomatoes" data-category="Vegetable" data-price="3.49" data-id="4">
-                    <div class="product-image">
-                        <img src="picture5.jpg" alt="Fresh Tomatoes">
-                    </div>
-                    <div class="product-info">
-                        <h3>Tomatoes</h3>
-                        <p>Juicy, ripe tomatoes. Great for salads.</p>
-                        <div class="price-category">
-                            <span class="price">$3.49</span>
-                            <span class="product-category">Vegetable</span>
-                        </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(4)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <div class="product-card" data-name="broccoli" data-category="Vegetable" data-price="1.49" data-id="5">
-                    <div class="product-image">
-                        <img src="picture6.jpg" alt="Fresh Broccoli">
-                    </div>
-                    <div class="product-info">
-                        <h3>Broccoli</h3>
-                        <p>Fresh broccoli. Rich in vitamins.</p>
-                        <div class="price-category">
-                            <span class="price">$1.49</span>
-                            <span class="product-category">Vegetable</span>
-                        </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(5)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <div class="product-card" data-name="watermelon" data-category="Fruit" data-price="2.49" data-id="6">
-                    <div class="product-image">
-                        <img src="picture7.jpg" alt="Fresh Watermelon">
-                    </div>
-                    <div class="product-info">
-                        <h3>Watermelon</h3>
-                        <p>Refreshing watermelon. Sweet and juicy.</p>
-                        <div class="price-category">
-                            <span class="price">$2.49</span>
-                            <span class="product-category">Fruit</span>
-                        </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(6)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <div class="product-card" data-name="oranges" data-category="Fruit" data-price="3.99" data-id="7">
-                    <div class="product-image">
-                        <img src="picture10.jpg" alt="Mango">
-                    </div>
-                    <div class="product-info">
-                        <h3>Mango</h3>
-                        <p>Sweet, juicy mangoes packed with tropical flavor.</p>
-                        <div class="price-category">
-                            <span class="price">$5.99</span>
-                            <span class="product-category">Fruit</span>
-                        </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(7)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
-                </div>
-
-                <div class="product-card" data-name="onion" data-category="Vegetable" data-price="1.99" data-id="8">
-                    <div class="product-image">
-                        <img src="picture11.jpg" alt="Fresh Onion">
-                    </div>
-                    <div class="product-info">
-                        <h3>Onion</h3>
-                        <p>Crisp, fresh onions for salads, stews, and sautéing.</p>
-                        <div class="price-category">
-                            <span class="price">$1.99</span>
-                            <span class="product-category">Vegetable</span>
-                        </div>
-                        <button class="add-to-cart-btn" onclick="addToCart(8)">
-                            <i class="fas fa-shopping-cart"></i> Add to Cart
-                        </button>
-                    </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be loaded dynamically from data/products.json -->
+                <div class="loading-message" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #2E8B57;"></i>
+                    <p>Loading products...</p>
                 </div>
             </div>
         </div>
@@ -383,10 +270,114 @@
         </div>
     </div>
 
+    <!-- Auth Modals -->
+    <div class="auth-modal" id="loginModal">
+        <div class="auth-modal-overlay" onclick="auth.closeAuthModals()"></div>
+        <div class="auth-modal-content">
+            <div class="auth-modal-header">
+                <h2>Login</h2>
+                <button class="close-auth-btn" onclick="auth.closeAuthModals()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="auth-form" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="auth-error" id="loginError"></div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                <p class="auth-switch">Don't have an account? <a href="#" onclick="event.preventDefault(); auth.closeAuthModals(); auth.showSignupModal();">Sign up</a></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="auth-modal" id="signupModal">
+        <div class="auth-modal-overlay" onclick="auth.closeAuthModals()"></div>
+        <div class="auth-modal-content">
+            <div class="auth-modal-header">
+                <h2>Sign Up</h2>
+                <button class="close-auth-btn" onclick="auth.closeAuthModals()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form class="auth-form" id="signupForm" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="signupName">Name</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password (min 6 characters)</label>
+                    <input type="password" id="signupPassword" required minlength="6">
+                </div>
+                <div class="auth-error" id="signupError"></div>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+                <p class="auth-switch">Already have an account? <a href="#" onclick="event.preventDefault(); auth.closeAuthModals(); auth.showLoginModal();">Login</a></p>
+            </form>
+        </div>
+    </div>
+
     <!-- Load Modular JS -->
     <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/product.js"></script>
     <script src="js/cart.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Auth form handlers
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            const result = auth.login(email, password);
+            if (result.success) {
+                errorDiv.textContent = '';
+                errorDiv.className = 'auth-success';
+                errorDiv.textContent = result.message;
+                setTimeout(() => {
+                    auth.closeAuthModals();
+                    errorDiv.className = 'auth-error';
+                }, 1000);
+            } else {
+                errorDiv.textContent = result.message;
+            }
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const errorDiv = document.getElementById('signupError');
+            
+            const result = auth.signup(name, email, password);
+            if (result.success) {
+                errorDiv.textContent = '';
+                errorDiv.className = 'auth-success';
+                errorDiv.textContent = result.message;
+                setTimeout(() => {
+                    auth.closeAuthModals();
+                    errorDiv.className = 'auth-error';
+                }, 1500);
+            } else {
+                errorDiv.textContent = result.message;
+            }
+        }
+
+        // Initialize auth UI on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.updateUI();
+        });
+    </script>
 </body>
 </html>

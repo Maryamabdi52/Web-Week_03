@@ -1,0 +1,75 @@
+[
+  {
+    "id": "1",
+    "name": "Apples",
+    "category": "Fruit",
+    "price": 2.99,
+    "image": "picture9.jpg",
+    "description": "Crisp, juicy apples perfect for snacking, baking, or juicing.",
+    "stock": 15
+  },
+  {
+    "id": "2",
+    "name": "Carrots",
+    "category": "Vegetable",
+    "price": 1.99,
+    "image": "picture3.jpg",
+    "description": "Sweet, crunchy carrots. Great for salads.",
+    "stock": 25
+  },
+  {
+    "id": "3",
+    "name": "Bananas",
+    "category": "Fruit",
+    "price": 0.99,
+    "image": "picture4.jpg",
+    "description": "Sweet bananas. Perfect for breakfast.",
+    "stock": 35
+  },
+  {
+    "id": "4",
+    "name": "Tomatoes",
+    "category": "Vegetable",
+    "price": 3.49,
+    "image": "picture5.jpg",
+    "description": "Juicy, ripe tomatoes. Great for salads.",
+    "stock": 45
+  },
+  {
+    "id": "5",
+    "name": "Broccoli",
+    "category": "Vegetable",
+    "price": 1.49,
+    "image": "picture6.jpg",
+    "description": "Fresh broccoli. Rich in vitamins.",
+    "stock": 55
+  },
+  {
+    "id": "6",
+    "name": "Watermelon",
+    "category": "Fruit",
+    "price": 2.49,
+    "image": "picture7.jpg",
+    "description": "Refreshing watermelon. Sweet and juicy.",
+    "stock": 65
+  },
+  {
+    "id": "7",
+    "name": "Mango",
+    "category": "Fruit",
+    "price": 5.99,
+    "image": "picture10.jpg",
+    "description": "Sweet, juicy mangoes packed with tropical flavor.",
+    "stock": 72
+  },
+  {
+    "id": "8",
+    "name": "Onion",
+    "category": "Vegetable",
+    "price": 1.99,
+    "image": "picture11.jpg",
+    "description": "Crisp, fresh onions for salads, stews, and sautéing.",
+    "stock": 78
+  }
+]
+

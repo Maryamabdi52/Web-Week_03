@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - Hami MiniMarket</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <span>Hami MiniMarket</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="index.html#products" class="nav-link">Products</a></li>
+                    <li><a href="index.html#about" class="nav-link">About</a></li>
+                    <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+                </ul>
+                <div class="nav-user" id="userInfo" style="display: none; align-items: center; gap: 1rem;">
+                    <span class="user-name"></span>
+                    <button class="btn btn-secondary btn-sm" onclick="auth.logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+                <div class="cart-counter" onclick="cart.toggleCartModal()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-badge" id="cartBadge"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Order History Content -->
+    <div class="order-history-container">
+        <div class="order-history-header">
+            <h1><i class="fas fa-history"></i> Order History</h1>
+            <p>View your past orders</p>
+        </div>
+
+        <div id="orderHistoryContent">
+            <!-- Orders will be rendered here -->
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-modal-overlay" onclick="cart.closeCartModal()"></div>
+        <div class="cart-modal-content">
+            <div class="cart-modal-header">
+                <h2>Your Cart</h2>
+                <button class="close-cart-btn" onclick="cart.closeCartModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cart-modal-body">
+                <div class="cart-items" id="cartItems">
+                    <!-- Cart items will be rendered here -->
+                </div>
+            </div>
+            <div class="cart-modal-footer">
+                <div class="cart-summary" id="cartSummary">
+                    <!-- Cart summary will be rendered here -->
+                </div>
+                <button class="btn btn-secondary clear-cart-btn" onclick="cart.clearCart()">
+                    <i class="fas fa-trash-alt"></i> Clear Cart
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Modular JS -->
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/product.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+        // Render order history
+        function renderOrderHistory() {
+            const content = document.getElementById('orderHistoryContent');
+            
+            // Check authentication
+            if (typeof auth === 'undefined' || !auth.isLoggedIn()) {
+                content.innerHTML = `
+                    <div class="empty-checkout">
+                        <i class="fas fa-lock"></i>
+                        <h3>Authentication Required</h3>
+                        <p>Please login to view your order history.</p>
+                        <a href="index.html" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-sign-in-alt"></i> Go to Login
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            const currentUser = auth.getCurrentUser();
+            const orderHistory = Storage.load('orderHistory') || [];
+            const userOrders = orderHistory.filter(order => order.userId === currentUser.id);
+
+            if (userOrders.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-checkout">
+                        <i class="fas fa-shopping-bag"></i>
+                        <h3>No Orders Yet</h3>
+                        <p>You haven't placed any orders yet. Start shopping to see your order history here.</p>
+                        <a href="index.html#products" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-shopping-cart"></i> Start Shopping
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = userOrders.map(order => {
+                const orderDate = new Date(order.date);
+                const formattedDate = orderDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                const itemsList = order.items.map(item => `
+                    <div class="order-history-item">
+                        <img src="${item.image}" alt="${item.name}">
+                        <div class="order-history-item-details">
+                            <h4>${item.name}</h4>
+                            <p>Quantity: ${item.quantity} × $${item.price.toFixed(2)}</p>
+                        </div>
+                        <span class="order-history-item-total">$${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="order-history-card">
+                        <div class="order-history-card-header">
+                            <div>
+                                <h3>Order #${order.id.slice(-6)}</h3>
+                                <p class="order-date"><i class="fas fa-calendar"></i> ${formattedDate}</p>
+                            </div>
+                            <div class="order-total-badge">
+                                <span>$${order.total.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="order-history-items">
+                            ${itemsList}
+                        </div>
+                        <div class="order-history-summary">
+                            <div class="order-summary-line">
+                                <span>Subtotal</span>
+                                <span>$${order.subtotal.toFixed(2)}</span>
+                            </div>
+                            <div class="order-summary-line">
+                                <span>Tax (5%)</span>
+                                <span>$${order.tax.toFixed(2)}</span>
+                            </div>
+                            ${order.discount > 0 ? `
+                                <div class="order-summary-line discount">
+                                    <span>Discount (10%)</span>
+                                    <span>-$${order.discount.toFixed(2)}</span>
+                                </div>
+                            ` : ''}
+                            <div class="order-summary-line total">
+                                <span>Total</span>
+                                <span>$${order.total.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.updateUI();
+            renderOrderHistory();
+        });
+    </script>
+</body>
+</html>
+

@@ -231,63 +231,40 @@ window.addEventListener('load', () => {
 });
 
 // Product Search and Filter Functionality
+let allProducts = [];
+
+function filterProducts() {
+    const searchInput = document.getElementById('productSearch');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const priceFilter = document.getElementById('priceFilter');
+    
+    if (!searchInput || !categoryFilter || !priceFilter) return;
+    
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const selectedCategory = categoryFilter.value;
+    const selectedPrice = priceFilter.value;
+
+    // Filter products based on criteria
+    const filteredProducts = allProducts.filter(product => {
+        const productName = product.name.toLowerCase();
+        const matchesSearch = !searchTerm || productName.includes(searchTerm);
+        const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+        const matchesPrice = selectedPrice === 'all' || product.price <= parseFloat(selectedPrice);
+        
+        return matchesSearch && matchesCategory && matchesPrice;
+    });
+
+    // Render filtered products
+    renderProducts(filteredProducts);
+}
+
 function initProductFilters() {
     const searchInput = document.getElementById('productSearch');
     const categoryFilter = document.getElementById('categoryFilter');
     const priceFilter = document.getElementById('priceFilter');
     const clearFilters = document.getElementById('clearFilters');
-    const productCards = document.querySelectorAll('.product-card');
 
-    function filterProducts() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
-        const selectedCategory = categoryFilter.value;
-        const selectedPrice = priceFilter.value;
-        let visibleCount = 0;
-
-        productCards.forEach(card => {
-            const productName = card.getAttribute('data-name').toLowerCase();
-            const productCategory = card.getAttribute('data-category');
-            const productPrice = parseFloat(card.getAttribute('data-price'));
-
-            const matchesSearch = !searchTerm || productName.includes(searchTerm);
-            const matchesCategory = selectedCategory === 'all' || productCategory === selectedCategory;
-            const matchesPrice = selectedPrice === 'all' || productPrice <= parseFloat(selectedPrice);
-
-            if (matchesSearch && matchesCategory && matchesPrice) {
-                card.classList.remove('hidden');
-                visibleCount++;
-            } else {
-                card.classList.add('hidden');
-            }
-        });
-
-        // Show "no results" message if needed
-        showNoResultsMessage(visibleCount);
-    }
-
-    function showNoResultsMessage(visibleCount) {
-        const productsGrid = document.querySelector('.products-grid');
-        let noResultsMsg = document.getElementById('noResultsMessage');
-
-        if (visibleCount === 0) {
-            if (!noResultsMsg) {
-                noResultsMsg = document.createElement('div');
-                noResultsMsg.id = 'noResultsMessage';
-                noResultsMsg.className = 'no-results-message';
-                noResultsMsg.innerHTML = `
-                    <i class="fas fa-search"></i>
-                    <h3>No products found</h3>
-                    <p>Try adjusting your search or filter criteria</p>
-                `;
-                noResultsMsg.style.gridColumn = '1 / -1';
-                productsGrid.appendChild(noResultsMsg);
-            }
-        } else {
-            if (noResultsMsg) {
-                noResultsMsg.remove();
-            }
-        }
-    }
+    if (!searchInput || !categoryFilter || !priceFilter || !clearFilters) return;
 
     // Event listeners
     searchInput.addEventListener('input', filterProducts);
@@ -303,14 +280,68 @@ function initProductFilters() {
     });
 }
 
-// Initialize product filters when page loads
+// Load products and initialize page
+async function initProducts() {
+    try {
+        // Load products from JSON
+        allProducts = await Product.loadProducts();
+        
+        if (allProducts.length === 0) {
+            const productsGrid = document.querySelector('.products-grid');
+            if (productsGrid) {
+                productsGrid.innerHTML = `
+                    <div class="no-results-message" style="grid-column: 1 / -1;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Failed to load products</h3>
+                        <p>Please refresh the page or check your connection</p>
+                    </div>
+                `;
+            }
+            return;
+        }
+
+        // Render all products initially
+        renderProducts(allProducts);
+        
+        // Initialize filters
+        initProductFilters();
+    } catch (error) {
+        console.error('Error initializing products:', error);
+        const productsGrid = document.querySelector('.products-grid');
+        if (productsGrid) {
+            productsGrid.innerHTML = `
+                <div class="no-results-message" style="grid-column: 1 / -1;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error loading products</h3>
+                    <p>${error.message}</p>
+                </div>
+            `;
+        }
+    }
+}
+
+// Initialize products when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    initProductFilters();
+    initProducts();
 });
 
 // Cart functionality - now using modular cart.js
 // This function is called from HTML onclick handlers
+// Adds 1 item to cart - quantity can be changed in cart modal
 function addToCart(productId) {
-    cart.addItem(productId);
+    const product = Product.getProductById(productId);
+    
+    if (!product) {
+        cart.showNotification('Product not found');
+        return;
+    }
+    
+    // Check stock availability
+    if (product.stock !== undefined && product.stock === 0) {
+        cart.showNotification('This product is out of stock');
+        return;
+    }
+    
+    cart.addItem(productId, 1);
     cart.openCartModal(); // Open cart modal when adding item
 }

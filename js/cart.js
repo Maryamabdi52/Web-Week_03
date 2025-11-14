@@ -27,8 +27,9 @@ class Cart {
     /**
      * Add item to cart
      * @param {string} productId - The product ID to add
+     * @param {number} quantity - Quantity to add (default: 1)
      */
-    addItem(productId) {
+    addItem(productId, quantity = 1) {
         const product = Product.getProductFromDOM(productId);
         
         if (!product) {
@@ -36,10 +37,21 @@ class Cart {
             return;
         }
 
+        // Check stock availability
+        if (product.stock !== undefined) {
+            const existingItem = this.items.find(item => item.id === productId);
+            const currentCartQty = existingItem ? existingItem.quantity : 0;
+            
+            if (currentCartQty + quantity > product.stock) {
+                this.showNotification(`Only ${product.stock} available in stock`);
+                return;
+            }
+        }
+
         const existingItem = this.items.find(item => item.id === productId);
 
         if (existingItem) {
-            existingItem.quantity += 1;
+            existingItem.quantity += quantity;
         } else {
             this.items.push({
                 id: product.id,
@@ -48,13 +60,13 @@ class Cart {
                 category: product.category,
                 image: product.image,
                 description: product.description,
-                quantity: 1
+                quantity: quantity
             });
         }
 
         this.save();
         this.render();
-        this.showNotification('Item added to cart!');
+        this.showNotification(quantity > 1 ? `${quantity} items added to cart!` : 'Item added to cart!');
     }
 
     /**
@@ -76,17 +88,28 @@ class Cart {
     updateQuantity(productId, change) {
         const item = this.items.find(item => item.id === productId);
         
-        if (item) {
-            item.quantity += change;
-            
-            if (item.quantity <= 0) {
-                this.removeItem(productId);
-                return;
+        if (!item) return;
+        
+        // Check stock if increasing quantity
+        if (change > 0) {
+            const product = Product.getProductById(productId);
+            if (product && product.stock !== undefined) {
+                if (item.quantity + change > product.stock) {
+                    this.showNotification(`Only ${product.stock} available in stock`);
+                    return;
+                }
             }
-            
-            this.save();
-            this.render();
         }
+        
+        item.quantity += change;
+        
+        if (item.quantity <= 0) {
+            this.removeItem(productId);
+            return;
+        }
+        
+        this.save();
+        this.render();
     }
 
     /**
@@ -288,6 +311,15 @@ class Cart {
     goToCheckout() {
         if (this.items.length === 0) {
             this.showNotification('Your cart is empty');
+            return;
+        }
+        
+        // Check if user is logged in (if auth module is available)
+        if (typeof auth !== 'undefined' && !auth.isLoggedIn()) {
+            this.showNotification('Please login to proceed to checkout');
+            if (auth.showLoginModal) {
+                setTimeout(() => auth.showLoginModal(), 500);
+            }
             return;
         }
         
